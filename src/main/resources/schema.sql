@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS devices (
+    id VARCHAR(36) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    brand VARCHAR(255) NOT NULL,
+    state ENUM('AVAILABLE', 'IN_USE', 'INACTIVE') NOT NULL,
+    creation_time TIMESTAMP NOT NULL,
+    CONSTRAINT pk_devices PRIMARY KEY (id)
+);
