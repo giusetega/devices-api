@@ -9,12 +9,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "devices")
 public class Device {
@@ -35,5 +37,12 @@ public class Device {
 
     @Column
     private LocalDateTime creationTime;
+
+    public Device(String name, String brand, DeviceState state, LocalDateTime creationTime) {
+        this.name = name;
+        this.brand = brand;
+        this.state = state;
+        this.creationTime = creationTime;
+    }
 
 }
