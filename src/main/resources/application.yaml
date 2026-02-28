@@ -1,3 +1,14 @@
 spring:
   application:
     name: devices
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/devices
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect

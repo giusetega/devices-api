@@ -1,0 +1,10 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: devices-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: devices
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
