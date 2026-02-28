@@ -7,10 +7,13 @@ import com.giuseppe.devices.dto.DeviceResponse;
 import com.giuseppe.devices.exception.ResourceNotFoundException;
 import com.giuseppe.devices.mapper.DeviceMapper;
 import com.giuseppe.devices.repository.DeviceRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class DeviceService {
 
@@ -22,12 +25,17 @@ public class DeviceService {
         this.deviceRepository = deviceRepository;
     }
 
+    @Transactional
     public DeviceResponse create(DeviceRequest request) {
         Device device = DeviceMapper.requestToEntity(request);
+
         Device saved = deviceRepository.save(device);
+        log.info("Device with id {} has been saved", saved.getId());
+
         return DeviceMapper.entityToResponse(saved);
     }
 
+    @Transactional
     public DeviceResponse update(String id, DeviceRequest request) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
@@ -36,24 +44,29 @@ public class DeviceService {
         device.setState(request.state());
 
         Device updated = deviceRepository.save(device);
+        log.info("Device with id {} has been updated", id);
 
         return DeviceMapper.entityToResponse(updated);
     }
 
+    @Transactional(readOnly = true)
     public DeviceResponse getById(String id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
+        log.info("Device with id {} has been fetched", device.getId());
+
         return DeviceMapper.entityToResponse(device);
     }
 
-
-    // With get all I can probably manage getByBrand and getByState in one shot
+    @Transactional(readOnly = true)
     public List<DeviceResponse> findByFilters(String brand, DeviceState state) {
         List<Device> byFilters = deviceRepository.findByFilters(brand, state);
         return byFilters.stream().map(DeviceMapper::entityToResponse).toList();
     }
 
+    @Transactional
     public void delete(String id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
         deviceRepository.delete(device);
+        log.info("Device with id {} has been deleted", id);
     }
 }
