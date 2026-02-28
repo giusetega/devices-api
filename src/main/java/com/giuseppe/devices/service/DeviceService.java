@@ -3,15 +3,17 @@ package com.giuseppe.devices.service;
 import com.giuseppe.devices.domain.Device;
 import com.giuseppe.devices.dto.DeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
+import com.giuseppe.devices.exception.ResourceNotFoundException;
 import com.giuseppe.devices.mapper.DeviceMapper;
 import com.giuseppe.devices.repository.DeviceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DeviceService {
+
+    private static final String DEVICE_NOT_FOUND = "Device not found";
 
     private final DeviceRepository deviceRepository;
 
@@ -26,24 +28,20 @@ public class DeviceService {
     }
 
     public DeviceResponse update(String id, DeviceRequest request) {
-        Optional<Device> deviceOptional = deviceRepository.findById(id);
+        Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
-        if (deviceOptional.isPresent()) {
-            Device device = deviceOptional.get();
-            device.setName(request.name());
-            device.setBrand(request.brand());
-            device.setState(request.state());
+        device.setName(request.name());
+        device.setBrand(request.brand());
+        device.setState(request.state());
 
-            Device updated = deviceRepository.save(device);
-            return DeviceMapper.entityToResponse(updated);
-        }
+        Device updated = deviceRepository.save(device);
 
-        return null;
+        return DeviceMapper.entityToResponse(updated);
     }
 
     public DeviceResponse getById(String id) {
-        Optional<Device> deviceOptional = deviceRepository.findById(id);
-        return deviceOptional.map(DeviceMapper::entityToResponse).orElse(null);
+        Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
+        return DeviceMapper.entityToResponse(device);
     }
 
     // Not sure if it should work alone
@@ -63,7 +61,7 @@ public class DeviceService {
     }
 
     public void delete(String id) {
-        Optional<Device> deviceOptional = deviceRepository.findById(id);
-        deviceOptional.ifPresent(deviceRepository::delete);
+        Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
+        deviceRepository.delete(device);
     }
 }
