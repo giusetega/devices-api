@@ -1,6 +1,7 @@
 package com.giuseppe.devices.service;
 
 import com.giuseppe.devices.domain.Device;
+import com.giuseppe.devices.domain.DeviceState;
 import com.giuseppe.devices.dto.DeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
 import com.giuseppe.devices.exception.ResourceNotFoundException;
@@ -44,19 +45,10 @@ public class DeviceService {
         return DeviceMapper.entityToResponse(device);
     }
 
-    // Not sure if it should work alone
-    public DeviceResponse getByBrand(String id) {
-        return null;
-    }
-
-    // Not sure if it should work alone
-    public DeviceResponse getByState(String id) {
-        return null;
-    }
 
     // With get all I can probably manage getByBrand and getByState in one shot
-    public List<DeviceResponse> getAll() {
-        List<Device> byFilters = deviceRepository.findAll();
+    public List<DeviceResponse> findByFilters(String brand, DeviceState state) {
+        List<Device> byFilters = deviceRepository.findByFilters(brand, state);
         return byFilters.stream().map(DeviceMapper::entityToResponse).toList();
     }
 
