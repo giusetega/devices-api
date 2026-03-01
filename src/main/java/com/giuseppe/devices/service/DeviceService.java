@@ -4,6 +4,7 @@ import com.giuseppe.devices.domain.Device;
 import com.giuseppe.devices.domain.DeviceState;
 import com.giuseppe.devices.dto.DeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
+import com.giuseppe.devices.exception.BusinessException;
 import com.giuseppe.devices.exception.ResourceNotFoundException;
 import com.giuseppe.devices.mapper.DeviceMapper;
 import com.giuseppe.devices.repository.DeviceRepository;
@@ -39,6 +40,17 @@ public class DeviceService {
     public DeviceResponse update(String id, DeviceRequest request) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
+        if (device.getState() == DeviceState.IN_USE) {
+
+            if (!device.getName().equals(request.name())) {
+                throw new BusinessException("Name cannot be updated when device is IN_USE");
+            }
+
+            if (!device.getBrand().equals(request.brand())) {
+                throw new BusinessException("Brand cannot be updated when device is IN_USE");
+            }
+        }
+
         device.setName(request.name());
         device.setBrand(request.brand());
         device.setState(request.state());
@@ -66,6 +78,11 @@ public class DeviceService {
     @Transactional
     public void delete(String id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
+
+        if (device.getState() == DeviceState.IN_USE) {
+            throw new BusinessException("Device with id " + device.getId() + " cannot be deleted because IN_USE");
+        }
+
         deviceRepository.delete(device);
         log.info("Device with id {} has been deleted", id);
     }

@@ -35,7 +35,7 @@ public class Device {
     @Column
     private DeviceState state;
 
-    @Column
+    @Column(updatable = false)
     private LocalDateTime creationTime;
 
     public Device(String name, String brand, DeviceState state, LocalDateTime creationTime) {
