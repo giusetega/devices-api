@@ -23,36 +23,36 @@ public class DeviceController implements DeviceControllerInterface{
     @Override
     public ResponseEntity<DeviceResponse> createDevice(CreateDeviceRequest createDeviceRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(deviceService.create(createDeviceRequest));
+                .body(deviceService.createDevice(createDeviceRequest));
     }
 
     @Override
     public ResponseEntity<DeviceResponse> updateDevice(String id, CreateDeviceRequest createDeviceRequest) {
-        DeviceResponse response = deviceService.update(id, createDeviceRequest);
+        DeviceResponse response = deviceService.updateDevice(id, createDeviceRequest);
         return ResponseEntity.ok(response);
     }
 
     @Override
     public ResponseEntity<DeviceResponse> partialUpdateDevice(String id, UpdateDeviceRequest updateDeviceRequest) {
-        DeviceResponse response = deviceService.partialUpdate(id, updateDeviceRequest);
+        DeviceResponse response = deviceService.partialUpdateDevice(id, updateDeviceRequest);
         return ResponseEntity.ok(response);
     }
 
     @Override
     public ResponseEntity<DeviceResponse> getDevice(String id) {
-        DeviceResponse deviceResponse = deviceService.getById(id);
+        DeviceResponse deviceResponse = deviceService.getDevice(id);
         return ResponseEntity.ok().body(deviceResponse);
     }
 
     @Override
     public ResponseEntity<List<DeviceResponse>> listDevices(String brand, DeviceState state) {
-        List<DeviceResponse> deviceResponseList = deviceService.findByFilters(brand, state);
+        List<DeviceResponse> deviceResponseList = deviceService.listDevices(brand, state);
         return ResponseEntity.ok().body(deviceResponseList);
     }
 
     @Override
     public ResponseEntity<Void> deleteDevice(String id) {
-        deviceService.delete(id);
+        deviceService.deleteDevice(id);
         return ResponseEntity.noContent().build();
     }
 }

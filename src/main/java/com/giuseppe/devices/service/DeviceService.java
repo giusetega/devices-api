@@ -28,7 +28,7 @@ public class DeviceService {
     }
 
     @Transactional
-    public DeviceResponse create(CreateDeviceRequest request) {
+    public DeviceResponse createDevice(CreateDeviceRequest request) {
         Device device = DeviceMapper.requestToEntity(request);
 
         Device saved = deviceRepository.save(device);
@@ -38,7 +38,7 @@ public class DeviceService {
     }
 
     @Transactional
-    public DeviceResponse update(String id, CreateDeviceRequest request) {
+    public DeviceResponse updateDevice(String id, CreateDeviceRequest request) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
         validateImmutableFieldsIfInUse(device, request.name(), request.brand());
@@ -54,7 +54,7 @@ public class DeviceService {
     }
 
     @Transactional
-    public DeviceResponse partialUpdate(String id, UpdateDeviceRequest request) {
+    public DeviceResponse partialUpdateDevice(String id, UpdateDeviceRequest request) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
         validateImmutableFieldsIfInUse(device, request.name(), request.brand());
@@ -78,7 +78,7 @@ public class DeviceService {
     }
 
     @Transactional(readOnly = true)
-    public DeviceResponse getById(String id) {
+    public DeviceResponse getDevice(String id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
         log.info("Device with id {} has been fetched", device.getId());
 
@@ -86,13 +86,13 @@ public class DeviceService {
     }
 
     @Transactional(readOnly = true)
-    public List<DeviceResponse> findByFilters(String brand, DeviceState state) {
+    public List<DeviceResponse> listDevices(String brand, DeviceState state) {
         List<Device> byFilters = deviceRepository.findByFilters(brand, state);
         return byFilters.stream().map(DeviceMapper::entityToResponse).toList();
     }
 
     @Transactional
-    public void delete(String id) {
+    public void deleteDevice(String id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
         if (device.getState() == DeviceState.IN_USE) {
@@ -104,7 +104,6 @@ public class DeviceService {
     }
 
     private void validateImmutableFieldsIfInUse(Device device, String name, String brand) {
-
         if (device.getState() == DeviceState.IN_USE) {
 
             if (name != null && !device.getName().equals(name)) {
