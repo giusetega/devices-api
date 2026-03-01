@@ -1,10 +1,36 @@
 services:
+
   mysql:
     image: mysql:8.4
     container_name: devices-mysql
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: devices
       MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     ports:
       - "3306:3306"
+    networks:
+      - dev-net
+
+  backend:
+    depends_on:
+      mysql:
+        condition: service_healthy
+    build: .
+    image: devices-api:v1.0.0
+    container_name: dockerized-devices-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devices
+    ports:
+      - "8080:8080"
+    networks:
+      - dev-net
+
+
+networks:
+  dev-net:
