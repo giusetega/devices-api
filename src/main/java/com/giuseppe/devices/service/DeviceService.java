@@ -4,6 +4,7 @@ import com.giuseppe.devices.domain.Device;
 import com.giuseppe.devices.domain.DeviceState;
 import com.giuseppe.devices.dto.CreateDeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
+import com.giuseppe.devices.dto.UpdateDeviceRequest;
 import com.giuseppe.devices.exception.BusinessException;
 import com.giuseppe.devices.exception.ResourceNotFoundException;
 import com.giuseppe.devices.mapper.DeviceMapper;
@@ -40,16 +41,23 @@ public class DeviceService {
     public DeviceResponse update(String id, CreateDeviceRequest request) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
-        if (device.getState() == DeviceState.IN_USE) {
+        validateImmutableFieldsIfInUse(device, request.name(), request.brand());
 
-            if (request.brand() != null && !device.getName().equals(request.name())) {
-                throw new BusinessException("Name cannot be updated when device is IN_USE");
-            }
+        device.setName(request.name());
+        device.setBrand(request.brand());
+        device.setState(request.state());
 
-            if (request.brand() != null && !device.getBrand().equals(request.brand())) {
-                throw new BusinessException("Brand cannot be updated when device is IN_USE");
-            }
-        }
+        Device updated = deviceRepository.save(device);
+        log.info("Device with id {} has been updated", id);
+
+        return DeviceMapper.entityToResponse(updated);
+    }
+
+    @Transactional
+    public DeviceResponse partialUpdate(String id, UpdateDeviceRequest request) {
+        Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
+
+        validateImmutableFieldsIfInUse(device, request.name(), request.brand());
 
         if (request.name() != null) {
             device.setName(request.name());
@@ -64,7 +72,7 @@ public class DeviceService {
         }
 
         Device updated = deviceRepository.save(device);
-        log.info("Device with id {} has been updated", id);
+        log.info("Device with id {} has been partially updated", id);
 
         return DeviceMapper.entityToResponse(updated);
     }
@@ -93,5 +101,19 @@ public class DeviceService {
 
         deviceRepository.delete(device);
         log.info("Device with id {} has been deleted", id);
+    }
+
+    private void validateImmutableFieldsIfInUse(Device device, String name, String brand) {
+
+        if (device.getState() == DeviceState.IN_USE) {
+
+            if (name != null && !device.getName().equals(name)) {
+                throw new BusinessException("Name cannot be updated when device is IN_USE");
+            }
+
+            if (brand != null && !device.getBrand().equals(brand)) {
+                throw new BusinessException("Brand cannot be updated when device is IN_USE");
+            }
+        }
     }
 }

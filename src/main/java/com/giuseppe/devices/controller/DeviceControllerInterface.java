@@ -3,6 +3,7 @@ package com.giuseppe.devices.controller;
 import com.giuseppe.devices.domain.DeviceState;
 import com.giuseppe.devices.dto.CreateDeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
+import com.giuseppe.devices.dto.UpdateDeviceRequest;
 import com.giuseppe.devices.exception.APIErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,7 +44,7 @@ public interface DeviceControllerInterface {
 
 
     @Operation(
-            description = "Creates a new device.",
+            description = "Update of a device.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = DeviceResponse.class)))
             }
@@ -51,6 +53,18 @@ public interface DeviceControllerInterface {
     ResponseEntity<DeviceResponse> updateDevice(
             @Parameter(description = "Device ID", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
             @Parameter(description = "Device payload", required = true) @Valid @RequestBody CreateDeviceRequest createDeviceRequest
+    );
+
+    @Operation(
+            description = "Partial update of a device.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = DeviceResponse.class)))
+            }
+    )
+    @PatchMapping(value = "/{id}", produces = "application/json", consumes = "application/json")
+    ResponseEntity<DeviceResponse> partialUpdateDevice(
+            @Parameter(description = "Device ID", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
+            @Parameter(description = "Device payload", required = true) @RequestBody UpdateDeviceRequest updateDeviceRequest
     );
 
 

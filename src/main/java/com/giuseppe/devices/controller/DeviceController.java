@@ -3,6 +3,7 @@ package com.giuseppe.devices.controller;
 import com.giuseppe.devices.domain.DeviceState;
 import com.giuseppe.devices.dto.CreateDeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
+import com.giuseppe.devices.dto.UpdateDeviceRequest;
 import com.giuseppe.devices.service.DeviceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,38 +20,6 @@ public class DeviceController implements DeviceControllerInterface{
         this.deviceService = deviceService;
     }
 
-//    @PostMapping
-//    public ResponseEntity<DeviceResponse> create(@Valid @RequestBody DeviceRequest request) {
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(deviceService.create(request));
-//    }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<DeviceResponse> update(
-//            @PathVariable String id,
-//            @Valid @RequestBody DeviceRequest request) {
-//        DeviceResponse response = deviceService.update(id, request);
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public DeviceResponse get(@PathVariable String id) {
-//        return deviceService.getById(id);
-//    }
-//
-//    @GetMapping
-//    public List<DeviceResponse> getAll(
-//            @RequestParam(required = false) String brand,
-//            @RequestParam(required = false) DeviceState state) {
-//        return deviceService.findByFilters(brand, state);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable String id) {
-//        deviceService.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
-
     @Override
     public ResponseEntity<DeviceResponse> createDevice(CreateDeviceRequest createDeviceRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -60,6 +29,12 @@ public class DeviceController implements DeviceControllerInterface{
     @Override
     public ResponseEntity<DeviceResponse> updateDevice(String id, CreateDeviceRequest createDeviceRequest) {
         DeviceResponse response = deviceService.update(id, createDeviceRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<DeviceResponse> partialUpdateDevice(String id, UpdateDeviceRequest updateDeviceRequest) {
+        DeviceResponse response = deviceService.partialUpdate(id, updateDeviceRequest);
         return ResponseEntity.ok(response);
     }
 
