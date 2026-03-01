@@ -2,7 +2,7 @@ package com.giuseppe.devices.service;
 
 import com.giuseppe.devices.domain.Device;
 import com.giuseppe.devices.domain.DeviceState;
-import com.giuseppe.devices.dto.DeviceRequest;
+import com.giuseppe.devices.dto.CreateDeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
 import com.giuseppe.devices.exception.BusinessException;
 import com.giuseppe.devices.exception.ResourceNotFoundException;
@@ -27,7 +27,7 @@ public class DeviceService {
     }
 
     @Transactional
-    public DeviceResponse create(DeviceRequest request) {
+    public DeviceResponse create(CreateDeviceRequest request) {
         Device device = DeviceMapper.requestToEntity(request);
 
         Device saved = deviceRepository.save(device);
@@ -37,23 +37,31 @@ public class DeviceService {
     }
 
     @Transactional
-    public DeviceResponse update(String id, DeviceRequest request) {
+    public DeviceResponse update(String id, CreateDeviceRequest request) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(DEVICE_NOT_FOUND));
 
         if (device.getState() == DeviceState.IN_USE) {
 
-            if (!device.getName().equals(request.name())) {
+            if (request.brand() != null && !device.getName().equals(request.name())) {
                 throw new BusinessException("Name cannot be updated when device is IN_USE");
             }
 
-            if (!device.getBrand().equals(request.brand())) {
+            if (request.brand() != null && !device.getBrand().equals(request.brand())) {
                 throw new BusinessException("Brand cannot be updated when device is IN_USE");
             }
         }
 
-        device.setName(request.name());
-        device.setBrand(request.brand());
-        device.setState(request.state());
+        if (request.name() != null) {
+            device.setName(request.name());
+        }
+
+        if (request.brand() != null) {
+            device.setBrand(request.brand());
+        }
+
+        if (request.state() != null) {
+            device.setState(request.state());
+        }
 
         Device updated = deviceRepository.save(device);
         log.info("Device with id {} has been updated", id);

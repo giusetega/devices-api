@@ -1,27 +1,17 @@
 package com.giuseppe.devices.controller;
 
 import com.giuseppe.devices.domain.DeviceState;
-import com.giuseppe.devices.dto.DeviceRequest;
+import com.giuseppe.devices.dto.CreateDeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
 import com.giuseppe.devices.service.DeviceService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/devices")
-public class DeviceController {
+public class DeviceController implements DeviceControllerInterface{
 
     private final DeviceService deviceService;
 
@@ -29,34 +19,64 @@ public class DeviceController {
         this.deviceService = deviceService;
     }
 
-    @PostMapping
-    public ResponseEntity<DeviceResponse> create(@Valid @RequestBody DeviceRequest request) {
+//    @PostMapping
+//    public ResponseEntity<DeviceResponse> create(@Valid @RequestBody DeviceRequest request) {
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(deviceService.create(request));
+//    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<DeviceResponse> update(
+//            @PathVariable String id,
+//            @Valid @RequestBody DeviceRequest request) {
+//        DeviceResponse response = deviceService.update(id, request);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @GetMapping("/{id}")
+//    public DeviceResponse get(@PathVariable String id) {
+//        return deviceService.getById(id);
+//    }
+//
+//    @GetMapping
+//    public List<DeviceResponse> getAll(
+//            @RequestParam(required = false) String brand,
+//            @RequestParam(required = false) DeviceState state) {
+//        return deviceService.findByFilters(brand, state);
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> delete(@PathVariable String id) {
+//        deviceService.delete(id);
+//        return ResponseEntity.noContent().build();
+//    }
+
+    @Override
+    public ResponseEntity<DeviceResponse> createDevice(CreateDeviceRequest createDeviceRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(deviceService.create(request));
+                .body(deviceService.create(createDeviceRequest));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DeviceResponse> update(
-            @PathVariable String id,
-            @Valid @RequestBody DeviceRequest request) {
-        DeviceResponse response = deviceService.update(id, request);
+    @Override
+    public ResponseEntity<DeviceResponse> updateDevice(String id, CreateDeviceRequest createDeviceRequest) {
+        DeviceResponse response = deviceService.update(id, createDeviceRequest);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public DeviceResponse get(@PathVariable String id) {
-        return deviceService.getById(id);
+    @Override
+    public ResponseEntity<DeviceResponse> getDevice(String id) {
+        DeviceResponse deviceResponse = deviceService.getById(id);
+        return ResponseEntity.ok().body(deviceResponse);
     }
 
-    @GetMapping
-    public List<DeviceResponse> getAll(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) DeviceState state) {
-        return deviceService.findByFilters(brand, state);
+    @Override
+    public ResponseEntity<List<DeviceResponse>> listDevices(String brand, DeviceState state) {
+        List<DeviceResponse> deviceResponseList = deviceService.findByFilters(brand, state);
+        return ResponseEntity.ok().body(deviceResponseList);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    @Override
+    public ResponseEntity<Void> deleteDevice(String id) {
         deviceService.delete(id);
         return ResponseEntity.noContent().build();
     }

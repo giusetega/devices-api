@@ -1,7 +1,7 @@
 package com.giuseppe.devices.mapper;
 
 import com.giuseppe.devices.domain.Device;
-import com.giuseppe.devices.dto.DeviceRequest;
+import com.giuseppe.devices.dto.CreateDeviceRequest;
 import com.giuseppe.devices.dto.DeviceResponse;
 
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ public class DeviceMapper {
     private DeviceMapper() {
     }
 
-    public static Device requestToEntity(DeviceRequest request) {
+    public static Device requestToEntity(CreateDeviceRequest request) {
         return new Device(
                 request.name(),
                 request.brand(),
